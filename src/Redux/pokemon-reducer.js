@@ -1,13 +1,10 @@
-import {actionsType} from "./redux-store";
-
 let initialState = {
-    pokemons: [] as Array<any>
+    pokemons: []
+
 };
 
-export type initialStateType = typeof initialState
 
-
-export const pokemoReducer = (state = initialState, action: ActionsTypes): initialStateType => {
+export const pokemoReducer = (state = initialState, action) => {
     switch (action.type) {
         case 'SEEPOKEMON': {
             let addstats = {
@@ -15,7 +12,6 @@ export const pokemoReducer = (state = initialState, action: ActionsTypes): initi
             }
             return {
                 ...state,
-                // @ts-ignore
                 pokemons: addstats,
             }
         }
@@ -25,15 +21,11 @@ export const pokemoReducer = (state = initialState, action: ActionsTypes): initi
     }
 }
 
-type ActionsTypes = actionsType<typeof actions>
 
-
-export const actions = {
-    Add: (stats: any) => {
-        return {
-            type: "SEEPOKEMON",
-            stats
-        } as const
+export const Add = (stats) => {
+    return {
+        type: "SEEPOKEMON",
+        stats
     }
-
 }
+

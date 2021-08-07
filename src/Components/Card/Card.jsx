@@ -1,68 +1,118 @@
-import React from 'react';
+import React, {useState} from 'react';
 import typeColors from '../../helpers/typeColors'
-import './style.css';
-import {Link, Route, Switch} from "react-router-dom";
-import {OneCardPokemon} from "../OneCardPokemon/OneCardPokemon";
+import s from './StyleCard/Card.module.css'
 import {useDispatch} from "react-redux";
-import {actions} from "../../Redux/pokemon-reducer";
+import {Add} from "../../Redux/pokemon-reducer";
+import {OneCardPokemon} from "../OneCardPokemon/OneCardPokemon";
 
 
-// @ts-ignore
-export const Card = ({pokemon}) => {
+export const Card = ({pokemonData, LoadMore, values}) => {
 
-    const dispatch = useDispatch
-    const Adds = (info:any) => {
-        dispatch(actions.Add(info))
+    let SeenPok
+
+    const dispatch = useDispatch()
+
+    const seen = (pokemon) => {
+        dispatch(Add(pokemon))
+        setSeenMode(1)
     }
 
-    const seePokemon = () => {
-        Adds(pokemon.stats)
+    const [seenMode, setSeenMode] = useState(0)
 
-
-    }
-
-
-    return (
-        <div className="Card" onClick={seePokemon}>
-            <Link to={"/pokemonstats"}>
-                <div className="Card__img">
-                    <img src={pokemon.sprites.front_default} alt=""/>
-                </div>
-                <div className="Card__name">
-                    {pokemon.name}
-                </div>
-                <div className="Card__types">
-                    {
-                        pokemon.types.map(type => {
-                            return (
-                                <div className="Card__type" style={{backgroundColor: typeColors[type.type.name]}}>
-                                    {type.type.name}
-                                </div>
-                            )
-                        })
+    let opencard
+    if (values == "noselect") {
+        opencard = pokemonData.map((pokemon, i) => {
+                return (
+                    <div className={s.Card} onClick={
+                        SeenPok = () => {
+                            seen(pokemon)
+                        }
+                    }>
+                        <div className={s.Card__img}>
+                            <img src={pokemon.sprites.front_default} alt="" width="100px" height="100px"/>
+                        </div>
+                        <div className={s.Card__name}>
+                            {pokemon.name}
+                        </div>
+                        <div className={s.Card__types}>
+                            {
+                                pokemon.types.map(type => {
+                                    return (
+                                        <div className={s.Card__type}
+                                             style={{backgroundColor: typeColors[type.type.name]}}>
+                                            {type.type.name}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+                    </div>
+                )
+                    ;
+            }
+        )
+    } else {
+        opencard = pokemonData.map((pokemon, i) => {
+                let openselect
+                let checkpokemon = <div className={s.Card} onClick={
+                    SeenPok = () => {
+                        seen(pokemon)
                     }
+                }>
+                    <div className={s.Card__img}>
+                        <img src={pokemon.sprites.front_default} alt="" width="100px" height="100px"/>
+                    </div>
+                    <div className={s.Card__name}>
+                        {pokemon.name}
+                    </div>
+                    <div className={s.Card__types}>
+                        {
+                            pokemon.types.map(type => {
+                                return (
+                                    <div className={s.Card__type}
+                                         style={{backgroundColor: typeColors[type.type.name]}}>
+                                        {type.type.name}
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
                 </div>
-                <div className="Card__info">
-                    <div className="Card__data Card__data--weight">
-                        <p className="title">Weight</p>
-                        <p>{pokemon.weight}</p>
+                if (pokemon.types.length > 1) {
+                    if (pokemon.types[0].type.name == values || pokemon.types[1].type.name == values) {
+                        openselect = checkpokemon
+                    } else {
+                    }
+                } else {
+                    if (pokemon.types[0].type.name == values) {
+                        openselect = checkpokemon
+                    } else {
+                    }
+                }
+
+
+                return (
+                    <div>
+                        {openselect}
                     </div>
-                    <div className="Card__data Card__data--weight">
-                        <p className="title">Height</p>
-                        <p>{pokemon.height}</p>
-                    </div>
-                    <div className="Card__data Card__data--ability">
-                        <p className="title">Ability</p>
-                        <p>{pokemon.abilities[0].ability.name}</p>
-                    </div>
+                )
+
+            }
+        )
+
+    }
+    return (
+
+        <div className={s.content}>
+            <div className={s.container}>
+                {opencard}
+                <div className={s.btn}>
+                    <button onClick={LoadMore}>Load More</button>
                 </div>
-                <Switch>
-                    <Route exact path="/pokemonstats">
-                        <OneCardPokemon pokemon={pokemon.stat}/>
-                    </Route>
-                </Switch>
-            </Link>
+            </div>
+            {seenMode === 1 ? <OneCardPokemon/> : ""}
+
         </div>
-    );
+    )
 }
 

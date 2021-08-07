@@ -1,7 +1,4 @@
-import {AppStateType} from "./Redux/redux-store";
-
-export const takepokemon = (state: AppStateType) => {
+export const takepokemon = (state) => {
     return state.pokemoPage.pokemons
-
 }
 

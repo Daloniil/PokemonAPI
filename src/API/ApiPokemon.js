@@ -1,6 +1,3 @@
-type Api = {}
-
-// @ts-ignore
 export const getPokemon = ({url}) => {
     return new Promise((resolve, reject) => {
         fetch(url).then(res => res.json())
@@ -10,7 +7,6 @@ export const getPokemon = ({url}) => {
     });
 }
 
-// @ts-ignore
 export async function getAllPokemon(url) {
     return new Promise((resolve, reject) => {
         fetch(url).then(res => res.json())
@@ -20,12 +16,3 @@ export async function getAllPokemon(url) {
     });
 }
 
-// @ts-ignore
-export async function getAllType(url) {
-    return new Promise((resolve, reject) => {
-        fetch(url).then(res => res.json())
-            .then(data => {
-                resolve(data)
-            })
-    });
-}
