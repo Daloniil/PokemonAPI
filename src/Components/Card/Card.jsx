@@ -21,10 +21,12 @@ export const Card = ({pokemonData, LoadMore, values}) => {
 
     return (
         <div className={s.content}>
+            {pokemonData.length == 0 ? <p>There are no Pokémon with this type</p> : ""}
             <div className={s.container}>
-                {pokemonData.map((pokemon, i) => {
+                {pokemonData.map((pokemon, i)  => {
+
                         return (
-                            <div className={s.Card} onClick={
+                            <div className={s.Card} key={pokemon.id} onClick={
                                 SeenPok = () => {
                                     seen(pokemon)
                                 }
