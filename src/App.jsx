@@ -4,23 +4,38 @@ import {Card} from './Components/Card/Card';
 import {useForm} from "react-hook-form";
 import s from "./StyleApp/App.module.css"
 
-const LoadPokemonURL = 'https://pokeapi.co/api/v2/pokemon?limit=12'
-
 
 export const App = () => {
     const [pokemonData, setPokemonData] = useState([])
     const [nextUrl, setNextUrl] = useState('');
     const [loading, setLoading] = useState(true);
+    const [values, setValues] = useState("noselect")
+
+    const LoadTypeURL = `https://pokeapi.co/api/v2/type/${values}` //There is no limit utility for this request. Therefore, I will not be able to create a withdrawal with a limit of 12
+    const LoadPokemonURL = 'https://pokeapi.co/api/v2/pokemon?limit=12'
+
     useEffect(() => {
         async function fetchData() {
-            let responsePokemon = await getAllPokemon(LoadPokemonURL)
-            setNextUrl(responsePokemon.next);
-            await loadPokemon(responsePokemon.results);
-            setLoading(false);
+            if (values == "noselect") {
+                setLoading(true);
+                let responsePokemon = await getAllPokemon(LoadPokemonURL)
+                setNextUrl(responsePokemon.next);
+                setPokemonData([])
+                await loadPokemon(responsePokemon.results);
+                setLoading(false);
+            } else {
+                setLoading(true);
+                let responsePokemon = await getAllPokemon(LoadTypeURL)
+                setNextUrl(responsePokemon.next);
+                setPokemonData([])
+                await loadPokemon(responsePokemon.pokemon);
+                setLoading(false);
+            }
+
         }
 
         fetchData();
-    }, [])
+    }, [values])
 
     const LoadMore = async () => {
         setLoading(true);
@@ -31,14 +46,22 @@ export const App = () => {
     }
 
     const loadPokemon = async (dataPokemon) => {
-        let _pokemonData = await Promise.all(dataPokemon.map(async pokemon => {
-            let pokemonRecord = await getPokemon(pokemon)
-            return pokemonRecord
-        }))
-        setPokemonData(pokemonData => ([...pokemonData, ..._pokemonData]));
+        if (values == "noselect") {
+            let _pokemonData = await Promise.all(dataPokemon.map(async pokemon => {
+                let pokemonRecord = await getPokemon(pokemon)
+                return pokemonRecord
+            }))
+            setPokemonData(pokemonData => ([...pokemonData, ..._pokemonData]));
+        } else {
+            let _pokemonData = await Promise.all(dataPokemon.map(async pokemon => {
+                let pokemonRecord = await getPokemon(pokemon.pokemon)
+                return pokemonRecord
+            }))
+            setPokemonData(pokemonData => ([...pokemonData, ..._pokemonData]));
+        }
+
 
     }
-    const [values, setValues] = useState("noselect")
 
     const {register, handleSubmit} = useForm();
     const onSubmit = data => setValues(data.selectPokemon);
@@ -67,7 +90,6 @@ export const App = () => {
                     <option value="dragon">Dragon</option>
                     <option value="dark">Dark</option>
                     <option value="fairy">Fairy</option>
-                    <option value="unknown">Unknown</option>
                     <option value="shadow">Shadow</option>
                 </select>
                 <button type="submit">Search</button>
